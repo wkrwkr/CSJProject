@@ -23,7 +23,6 @@ public class GUI extends JFrame implements ActionListener{
    private JFileChooser fChooser;
    private ArrayList<Worker> list;
    private JTextArea textarea;
-   //private JTextArea textArea;
    private JScrollPane scrollbar;
 
    
@@ -54,10 +53,6 @@ public class GUI extends JFrame implements ActionListener{
       scrollbar = new JScrollPane(textarea);
       scrollbar.setBounds(12, 10, 410, 206);
       contentPane.add(scrollbar);
-      
-      //textarea.setColumns(10);
-      
-      
    }
    
    public void setList(ArrayList<Worker> list) {

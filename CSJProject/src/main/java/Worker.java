@@ -3,14 +3,20 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 
+import spark.Request;
+
 public class Worker {
+	/////////////////////////////////
+	//현재 사용하지 않는 값들
 	private int ID;
 	private String Env_Name;
 	private String IP;
 	private String CPU;
 	private String RAM;
 	private String DISC_Size;
-	private double Score; //알고리즘 실행 후 평가값
+	private double Score;
+	/////////////////////////////////
+	
 	private boolean Heartbeat;
 	private Socket sock;
 	private InputStream in;
@@ -27,21 +33,8 @@ public class Worker {
 			e.printStackTrace();
 		}
 	}
-	
+	//소켓으로 워커에 보내는것은 파일밖에 없음
 	public void sendFile(String path) {
 		Packet.sendFile(out, path);
-	}
-	
-	public void sendMessage() {
-		byte tmp[];
-		try {
-			String a = "Hello Worker";
-			tmp = a.getBytes();
-			System.out.println(new String(tmp));
-			out.write(tmp);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 }

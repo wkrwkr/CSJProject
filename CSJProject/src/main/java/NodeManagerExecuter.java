@@ -6,14 +6,13 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 public class NodeManagerExecuter {
-	
+
 	private Thread th;
 	private NodeManager run;
 	
 	public NodeManagerExecuter() {
 		run = new NodeManager();
 		th = new Thread(run);
-		
 		th.start();
 	}
 	

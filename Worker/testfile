@@ -1,0 +1,24 @@
+#include <Wire.h> 
+#include <LiquidCrystal_I2C.h>
+
+char appid[] = "24025df0e1beb812d978921d06b0a8cd";
+
+char appid[][][] = { {"Seoul","37.5665"}, {"Iksan
+LiquidCrystal_I2C lcd(0x3F, 16, 2);
+void setup() {
+  // put your setup code here, to run once:
+  lcd.begin();
+  lcd.backlight();
+  lcd.setCursor(0,0);
+  lcd.print("Hello world");
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+  //lcd.setCursor(0,0);
+  //lcd.print("Hello world");
+  //delay(2000);
+  //lcd.setCursor(0,0);
+  //lcd.print(buf);
+  //delay(2000);
+}

@@ -10,7 +10,6 @@ import org.apache.spark.api.java.JavaSparkContext;
 import scala.Tuple2;
 
 public class Main {
-	static int runningtime = 0;
 
     public static void main(String[] args) {
     	NodeManagerExecuter m = new NodeManagerExecuter(); //리스닝소켓 생성
@@ -24,20 +23,16 @@ public class Main {
 			e.printStackTrace();
 		}
 		
-		//하트비트 체크 루틴 추가 필요
-		while(true)
-		{
-			try {
-				Thread.sleep(1000);
-				runningtime++;
-				get("/hello", (req, res) -> {
-	        		res.body(""+runningtime);
-	        		return res.body();
-	        	});
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
+		get("/hello", (req, res) -> {
+			return "Hello world";
+		});
+		
+		post("/log", (req, res) -> {
+			String log = req.headers("log");
+			String taskNum = req.headers("taskNum");
+			System.out.println("task "+taskNum+"'s log : "+log);
+			return "done";
+		});
+		//m.loop();
     }
 }
