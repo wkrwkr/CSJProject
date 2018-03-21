@@ -17,7 +17,6 @@ public class Main {
 		//GUI ¼Â¾÷
 		try {
 			GUI frame = new GUI();
-			frame.setList(m.getList());
 			frame.setVisible(true);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -33,6 +32,7 @@ public class Main {
 			System.out.println("task "+taskNum+"'s log : "+log);
 			return "done";
 		});
+		
 		//m.loop();
     }
 }

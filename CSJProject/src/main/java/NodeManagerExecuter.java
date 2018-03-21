@@ -1,5 +1,6 @@
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -15,10 +16,6 @@ public class NodeManagerExecuter {
 		th = new Thread(run);
 		th.start();
 	}
-	
-	public ArrayList<Worker> getList() {
-		return run.list;
-	}
 }
 
 class NodeManager implements Runnable{
@@ -26,11 +23,10 @@ class NodeManager implements Runnable{
 	private static final int LEN = 100;
 	private ServerSocket accepter;
 	private Socket sock;
-	private InputStream in;	
-	public ArrayList<Worker> list;
+	private OutputStream out;
 	
 	//노드매니저 초기화 - 새 연결을 받기 위한 리스닝소켓 생성
-	public NodeManager() {
+	public NodeManager() { 
 		try {
 			accepter = new ServerSocket();
 			accepter.setReuseAddress(true);
@@ -38,7 +34,7 @@ class NodeManager implements Runnable{
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		list = new ArrayList<Worker>();
+		Worker.worker_init();
 	}
 	
 	//노드매니저 루틴
@@ -47,16 +43,24 @@ class NodeManager implements Runnable{
 	public void run() {
 		while(true) {
 			byte result[] = new byte[LEN];
+			int idx;
 			// TODO Auto-generated method stub
 			try {
-				System.out.println("wait..");
+				System.out.println("wait for node..");
 				sock = accepter.accept();
 				if(sock == null) continue;
 				
-				in = sock.getInputStream();
-				in.read(result);
+				System.out.println("Connection for Node Established..");
 				
-				register(sock, result);
+				out = sock.getOutputStream();
+				
+				idx = register(sock, result);
+				Packet.connPacket(out, idx);
+
+				if(idx < 0)
+					System.out.println("Node List Out of bound..");
+				else
+					System.out.println("New Node Index : "+idx);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -65,10 +69,10 @@ class NodeManager implements Runnable{
 	}
 	
 	//노드정보를 등록하는 함수.
-	private void register(Socket sock, byte result[]) {
+	private int register(Socket sock, byte result[]) {
 		//노드정보를 sql에 입력하는 루틴 필요
 		System.out.println(new String(result));
 		
-		list.add(new Worker(sock));
+		return Worker.add(sock);
 	}
 }

@@ -20,20 +20,22 @@ import org.apache.http.util.EntityUtils;
 public class NodeModule {
 
 	private static final int TARGET_PORT = 8000;
-	private static final int PORT = 8001;
+	private static final int PORT = 8002;
 
 	private static final String url = "http://localhost:4567"; //test url
 	
 	private Socket socket;
 	private InputStream in; 
-	private OutputStream out;
 	private HttpClient httpclnt;
+	private int index;
 	
 	//워커노드 생성자
 	//http 쿼리를 보내기 위한 소켓 준비
 	//1. Master Node와 통신할 소켓 생성
 	//2. 자신의 H/W Specification 알림
 	public NodeModule() {
+		int[] result;
+		
 		httpclnt = HttpClients.createDefault();
 		
 		HttpPost post = new HttpPost(url+"/worker_init");
@@ -63,12 +65,21 @@ public class NodeModule {
 			System.out.println("Connected..");
 			System.out.println("user : "+System.getProperty("user.name"));
 			in = socket.getInputStream();
-			out = socket.getOutputStream();
-			
-			out.write("testWorker".getBytes());
+		
+			while((result = Packet.readHeader(in)) == null);
+			if(result[0] == 0) {
+				System.out.println("Connection Failed : Cannot Register more Node..");
+				socket.close();
+				socket = null;
+			}
+			index = Packet.readIdx(in, result[0]);
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public boolean isConnected() {
+		return (socket != null);
 	}
 	
 	//무한루프로 실행되는 루틴함수

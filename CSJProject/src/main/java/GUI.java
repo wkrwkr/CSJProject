@@ -55,10 +55,6 @@ public class GUI extends JFrame implements ActionListener{
       contentPane.add(scrollbar);
    }
    
-   public void setList(ArrayList<Worker> list) {
-      this.list = list;
-   }
-   
    @Override
     public void actionPerformed(ActionEvent arg0) {
             // TODO Auto-generated method stub
@@ -71,7 +67,7 @@ public class GUI extends JFrame implements ActionListener{
             }
             else if(arg0.getSource() == btnSend) {
                //list.get(0).sendMessage();
-               list.get(0).sendFile(fChooser.getSelectedFile().getPath());
+               Worker.get(0).sendFile(fChooser.getSelectedFile().getPath());
             }
     }
    

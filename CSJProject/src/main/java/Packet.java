@@ -10,10 +10,13 @@ public class Packet {
 	
 	private static final int PING = 0;
 	private static final int SEND = 1;
+	private static final int CONN = 2;
+	private static final String version = "0.01";
 	
 	public static int[] readHeader(InputStream in) {
 		byte buf[] = new byte[100];
 		String header;
+		String version;
 		int msgNum;
 		int off = 0;
 		int len;
@@ -30,6 +33,14 @@ public class Packet {
 				System.out.println("false : "+new String(buf).substring(0, 3));
 				return null;
 			}
+			
+			//버전정보를 읽음
+			in.read(buf,0,1);
+			len = Integer.parseInt(new String(buf).substring(0, 1));
+			in.read(buf,0,len);
+			version = new String(buf).substring(0, len);
+			System.out.println("Master Version : "+Packet.version);
+			System.out.println("Worker Version : "+version);
 			
 			//메시지 타입을 읽음
 			in.read(buf,0,1);
@@ -51,6 +62,14 @@ public class Packet {
 				in.read(buf,0,bodylen[1]);
 				bodylen[1] = Integer.parseInt(new String(buf).substring(0, bodylen[1]));
 				break;
+			case CONN :
+				//connect 메시지는 리스트 내의 인덱스넘버를 받음
+				in.read(buf,0,1);
+				bodylen[0] = Integer.parseInt(new String(buf).substring(0, 1));
+				
+				in.read(buf,0,bodylen[0]);
+				bodylen[0] = Integer.parseInt(new String(buf).substring(0, bodylen[0]));
+				break;
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -63,32 +82,13 @@ public class Packet {
 		byte[] buf = new byte[100];
 		int result = 0;
 		try {
-			System.out.println("?.. " + length);
 			result = in.read(buf, 0, length);
-			System.out.println("?");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return new String(buf).substring(0, result);
 	}
-	
-	/*
-	public static int readBodyl(InputStream in, int length) {
-		byte[] buf = new byte[100];
-		int result = 0;
-		
-		try {
-			do {
-				result = in.read(buf, 0, 100);
-				System.out.println(new String(buf).substring(0, result));
-			} while(length > 0);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return 0;
-	}*/
 	
 	//패킷에서 파일 정보를 읽고 저장
 	//length가 0인  경우 이미 파일이 존재한다는 전제.
@@ -111,6 +111,23 @@ public class Packet {
 			e.printStackTrace();
 		}
 		return 0;
+	}
+	
+	public static int readIdx(InputStream in, int length) {
+		byte[] buf = new byte[10];
+		int result = 0;
+		
+		try {
+			do {
+				result += in.read(buf,result,100);
+			} while(length > result);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		result = Integer.parseInt(new String(buf));
+		System.out.println("node index : "+result);
+		return result;
 	}
 	
 	public static int pingPacket(OutputStream out) {
@@ -170,22 +187,31 @@ public class Packet {
 		
 		return 0;
 	}
-	/*
-	public int sendMessage(OutputStream out, String message) {
-		writeHeader(out,SEND,message.length());
+	
+	public static int connPacket(OutputStream out, int idx) {
+		int[] length = new int[2];
+		if(idx < 0)
+			length[0] = 0;
+		else
+			length[0] = (""+idx).length();
+		writeHeader(out, CONN, length);
 		try {
-			out.write(message.getBytes(), 0, message.length());
+			out.write((""+idx).getBytes());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return 0;
 	}
-	*/
+	
 	private static int writeHeader(OutputStream out, int msgNum, int[] length) {
 		byte buf[];
 		String header = new String("");
 		header += "CSJ";
+		
+		header += Packet.version.length();
+		header += Packet.version;
+		
 		header += msgNum;
 		
 		switch(msgNum) {
@@ -196,6 +222,10 @@ public class Packet {
 			header += String.valueOf(length[1]).length();
 			header += length[0];
 			header += length[1];
+			break;
+		case CONN :
+			header += String.valueOf(length[0]).length();
+			header += length[0];
 			break;
 		}
 		
