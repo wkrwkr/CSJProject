@@ -20,7 +20,7 @@ import org.apache.http.util.EntityUtils;
 public class NodeModule {
 
 	private static final int TARGET_PORT = 8000;
-	private static final int PORT = 8002;
+	private static final int PORT = 8001;
 
 	private static final String url = "http://localhost:4567"; //test url
 	

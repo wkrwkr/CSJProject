@@ -18,7 +18,7 @@ public class Worker {
 	/////////////////////////////////
 	
 	private static Worker[] list;
-	private static final int list_max = 1024;
+	public static final int list_max = 1024;
 	
 	private boolean Heartbeat;
 	private Socket sock;
@@ -72,5 +72,9 @@ public class Worker {
 		}
 		
 		return i;
+	}
+	
+	public String toString() {
+		return ""+idx+'\n';
 	}
 }

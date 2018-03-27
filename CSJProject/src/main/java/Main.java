@@ -12,6 +12,8 @@ import scala.Tuple2;
 public class Main {
 
     public static void main(String[] args) {
+    	
+    	
     	NodeManagerExecuter m = new NodeManagerExecuter(); //府胶醋家南 积己
 		
 		//GUI 悸诀
@@ -22,17 +24,7 @@ public class Main {
 			e.printStackTrace();
 		}
 		
-		get("/hello", (req, res) -> {
-			return "Hello world";
-		});
 		
-		post("/log", (req, res) -> {
-			String log = req.headers("log");
-			String taskNum = req.headers("taskNum");
-			System.out.println("task "+taskNum+"'s log : "+log);
-			return "done";
-		});
 		
-		//m.loop();
     }
 }
